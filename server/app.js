@@ -2,9 +2,11 @@ const { Chess } = require('chess.js');
 const express = require('express');
 const app = express()
 const port = 3000
+const cors = require('cors')
 
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const { getResult, getMove, getLegalMoves } = require('./game');
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -31,6 +33,7 @@ io.on("connection", (socket) => {
     })
 });
 
+app.use(cors())
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
