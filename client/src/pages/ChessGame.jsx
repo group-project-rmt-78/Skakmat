@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Chess } from "chess.js";
 import { Loader2 } from "lucide-react";
-import { useGameStore } from "../stores/gameStore.js";
+import { useGame } from "../contexts/GameContext.jsx";
 import { useClock } from "../hooks/useClock.js";
 import { difficultyLabel } from "../utils/constants.js";
 import { getCaptured } from "../utils/chess.js";
@@ -16,16 +16,18 @@ import GameResultModal from "../components/chess/GameResultModal.jsx";
 export default function ChessGame() {
   const { gameId } = useParams();
   const navigate = useNavigate();
-  const game = useGameStore((s) => s.game);
-  const loading = useGameStore((s) => s.loading);
-  const thinking = useGameStore((s) => s.thinking);
-  const busy = useGameStore((s) => s.busy);
-  const error = useGameStore((s) => s.error);
-  const loadGame = useGameStore((s) => s.loadGame);
-  const refresh = useGameStore((s) => s.refresh);
-  const submitMove = useGameStore((s) => s.submitMove);
-  const resign = useGameStore((s) => s.resign);
-  const restart = useGameStore((s) => s.restart);
+  const {
+    game,
+    loading,
+    thinking,
+    busy,
+    error,
+    loadGame,
+    refresh,
+    submitMove,
+    resign,
+    restart,
+  } = useGame();
   const [showResult, setShowResult] = useState(true);
   const [selectedPly, setSelectedPly] = useState(null);
 

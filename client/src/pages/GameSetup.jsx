@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGameStore } from "../stores/gameStore.js";
+import { useGame } from "../contexts/GameContext.jsx";
 import { DIFFICULTIES, TIME_CONTROLS } from "../utils/constants.js";
 
 const selectedCls = "border-accent text-accent";
@@ -8,9 +8,7 @@ const idleCls = "border-line text-neutral-300 hover:border-neutral-500";
 
 export default function GameSetup() {
   const navigate = useNavigate();
-  const createGame = useGameStore((s) => s.createGame);
-  const loading = useGameStore((s) => s.loading);
-  const error = useGameStore((s) => s.error);
+  const { createGame, loading, error } = useGame();
 
   const [playerColor, setPlayerColor] = useState("WHITE");
   const [difficulty, setDifficulty] = useState("MEDIUM");
