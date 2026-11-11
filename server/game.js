@@ -21,7 +21,7 @@ function getLegalMoves( chess, square ) {
     return moves.map((m) => m.to)
 }
 
-// skakmat (ver.ku)
+// skakmat
 function isCheckmate(game) {
     return game.isCheckmate()
 }
