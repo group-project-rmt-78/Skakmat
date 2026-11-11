@@ -1,20 +1,21 @@
+require('dotenv').config()
+
 const { Chess } = require('chess.js')
 const express = require('express')
-const cors = require('cors')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
 const { getResult, getMove, getLegalMoves } = require('./game')
 const { getBotMove } = require('./stockfish')
+const moveAnalysis = require('./moveAnalysis')
 
 const port = process.env.PORT || 3000
 const app = express()
-app.use(cors())
 
 const httpServer = createServer(app)
-const io = new Server(httpServer, { 
-    cors: { 
-        origin: '*' 
-    } 
+const io = new Server(httpServer, {
+    cors: {
+        origin: '*'
+    }
 })
 
 const games = {}
@@ -25,7 +26,8 @@ function snapshot(chess) {
 }
 
 io.on('connection', (socket) => {
-    
+    console.log('User connected:', socket.id)
+
     socket.on('startGame', (data) => {
         const difficulty = data?.difficulty
 
@@ -37,6 +39,7 @@ io.on('connection', (socket) => {
         games[socket.id] = { chess, difficulty, isBotThinking: false }
 
         socket.emit('gameStarted', { ...snapshot(chess), difficulty })
+        console.log('Game started:', difficulty)
     })
 
     socket.on('getLegalMoves', (data) => {
@@ -77,6 +80,8 @@ io.on('connection', (socket) => {
             return socket.emit('gameError', { message: error.message })
         }
 
+        // TODO: panggil moveAnalysis di sini untuk dapat persentase & feedback
+
         let result = getResult(game.chess)
         socket.emit('boardUpdate', { ...snapshot(game.chess), result })
         if (result.over) return
@@ -113,11 +118,12 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id)
         delete games[socket.id]
     })
 })
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => res.send('Chess server is running!'))
 
 httpServer.listen(port, () => {
     console.log(`Server listening on port ${port}`)
