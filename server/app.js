@@ -14,20 +14,39 @@ const io = new Server(httpServer, {
 });
 
 const games = {}
+const difficulties = ["beginner", "easy", "medium", "hard", "expert"]
 
 // argumen 1: nama event, argumen 2: callback
 io.on("connection", (socket) => {
     // start game 
-    socket.on("startGame", () => {
+    socket.on("startGame", (data) => {
+        const difficulty = data?.difficulty;
+
+        if(!difficulties.includes(difficulty)){
+            socket.emit("gameError", {
+                message: "Invalid level"
+            }); 
+            return
+        }
+
         const chess = new Chess()
-        games[socket.id] = chess
+
+        games[socket.id] = {
+            chess: chess, 
+            difficulty: difficulty
+        }
 
         console.log(chess.ascii());
         
         socket.emit("gameStarted", {
             board: chess.board(), 
-            fen: chess.fen()
+            fen: chess.fen(), 
+            difficulty: difficulty
         })
+    })
+
+    socket.on("disconnect", () => {
+        delete games[socket.id]
     })
 });
 
