@@ -33,14 +33,12 @@ export default function ChessGame() {
 
   useEffect(() => {
     if (!game || game.id !== gameId) loadGame(gameId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId]);
 
   useEffect(() => {
     setShowResult(true);
   }, [game?.id]);
 
-  // Langkah baru: panel analisis kembali ke langkah pemain terbaru
   useEffect(() => {
     setSelectedPly(null);
   }, [game?.moves.length]);
@@ -49,7 +47,7 @@ export default function ChessGame() {
   const captured = useMemo(() => (game ? getCaptured(game.fen) : null), [game?.fen]);
   const clock = useClock(game);
 
-  // Jam habis: tanya server sampai game dinyatakan selesai
+
   const expired = Boolean(clock && clock.activeSide && clock[clock.activeSide] <= 0);
   useEffect(() => {
     if (!expired) return undefined;
@@ -58,9 +56,10 @@ export default function ChessGame() {
     return () => clearInterval(id);
   }, [expired, refresh]);
 
-  // Ada analisis yang belum selesai: ambil ulang game tiap 1,5 detik
   const hasPending = Boolean(
-    game?.moves.some((m) => m.analysis?.status === "PENDING")
+    game?.moves.some(
+      (m) => m.analysis?.status === "PENDING" || m.analysis?.textPending
+    )
   );
   useEffect(() => {
     if (!hasPending) return undefined;

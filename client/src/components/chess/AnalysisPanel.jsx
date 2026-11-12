@@ -75,6 +75,12 @@ export default function AnalysisPanel({ move, thinking }) {
         {a.text && (
           <p className="mt-2 text-sm leading-relaxed text-neutral-400">{a.text}</p>
         )}
+        {!a.text && a.textPending && (
+          <p className="mt-2 flex items-center gap-2 text-sm text-neutral-500">
+            <Loader2 size={14} className="animate-spin" />
+            Menyusun penjelasan...
+          </p>
+        )}
       </div>
     );
   }
